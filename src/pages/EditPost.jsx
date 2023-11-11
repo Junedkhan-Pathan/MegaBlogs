@@ -6,6 +6,7 @@ import {Container,PostForm} from '../components'
 const EditPost = () => {
     const [post,setPost] = useState(null);
     const navigate = useNavigate();
+    console.log("====edit post",post)
     const {slug} = useParams();
 
     useEffect(()=>{
@@ -25,7 +26,7 @@ const EditPost = () => {
   return post ? (
     <div className='py-8'>
         <Container>
-            <PostForm {...post}/>
+            <PostForm post={post}/>
         </Container>
     </div>
   ) :null

@@ -8,9 +8,7 @@ import { useSelector } from "react-redux";
 export default function Post() {
     const [post, setPost] = useState(null);
     const [postImage,setPostImage] = useState(null);
-    console.log("===Post from PostCom",post)
     const { slug } = useParams();
-    console.log("=====SLUG===>",slug)
     const navigate = useNavigate();
 
     const userData = useSelector((state) => state.auth.userData);
