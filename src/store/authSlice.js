@@ -13,7 +13,6 @@ const authSlice = createSlice({
             state.userData = action.payload.userData
         },
         logout: (state) => {
-            console.log("===ReachLogout===>")
             state.status = false,
             state.userData = null
         }

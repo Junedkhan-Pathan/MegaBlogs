@@ -17,7 +17,8 @@ const PostForm = ({post}) => {
     });
   const [postImage, setPostImage] = useState(null);
   const navigate = useNavigate();
-  const userData = useSelector((state) => state.auth.userData);
+  const userData = useSelector((state)=>state.auth.userData);
+
 
   if (post?.featuredImage) {
     appWriteService
@@ -48,7 +49,7 @@ const PostForm = ({post}) => {
         data.featuredImage = file.$id;
         const dbPost = await appWriteService.createPost({
           ...data,
-          userId: userData.$id,
+          userId:userData.$id,
         });
         if (dbPost) {
           navigate(`/post/${dbPost.$id}`);
