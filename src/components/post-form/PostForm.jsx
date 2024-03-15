@@ -5,7 +5,8 @@ import { useNavigate } from "react-router-dom";
 import appWriteService from "../../appwrite/config";
 import { Input, RTE, Button, Select } from "../index";
 
-const PostForm = ({post}) => {
+const PostForm = ({ post }) => {
+  const userData = useSelector(state => state.auth.userData.userData);
   const { register, handleSubmit, control, watch, setValue, getValues } =
     useForm({
       defaultValues: {
@@ -17,8 +18,6 @@ const PostForm = ({post}) => {
     });
   const [postImage, setPostImage] = useState(null);
   const navigate = useNavigate();
-  const userData = useSelector((state)=>state.auth.userData);
-
 
   if (post?.featuredImage) {
     appWriteService
@@ -32,7 +31,8 @@ const PostForm = ({post}) => {
         : null;
 
       if (file) {
-        appWriteService.deleteFile(post.featuredImage);
+        const prevPostId = post?.featuredImage ? appWriteService.deleteFile(post.featuredImage) : null
+        console.log(prevPostId)
       }
 
       const dbPost = await appWriteService.updatePost(post.$id, {
@@ -44,16 +44,18 @@ const PostForm = ({post}) => {
         navigate(`/post/${dbPost.$id}`);
       }
     } else {
-      const file = await appWriteService.uploadFile(data.image[0]);
-      if (file) {
-        data.featuredImage = file.$id;
-        const dbPost = await appWriteService.createPost({
-          ...data,
-          userId:userData.$id,
-        });
-        if (dbPost) {
-          navigate(`/post/${dbPost.$id}`);
-        }
+      const fileId = data.image[0]
+        ? await appWriteService
+            .uploadFile(data.image[0])
+            .then((file) => file.$id)
+        : undefined; //For if image don't want to uplod
+      data.featuredImage = fileId;
+      const dbPost = await appWriteService.createPost({
+        ...data,
+        userId: userData.$id,
+      });
+      if (dbPost) {
+        navigate(`/post/${dbPost.$id}`);
       }
     }
   };
@@ -117,7 +119,7 @@ const PostForm = ({post}) => {
           type="file"
           className="mb-4"
           accept="image/png, image/jpg, image/jpeg, image/gif"
-          {...register("image", { required: !post })}
+          {...register("image", { required: false })}
         />
         {post && (
           <div className="w-full mb-4">

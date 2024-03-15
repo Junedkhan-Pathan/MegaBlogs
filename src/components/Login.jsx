@@ -3,8 +3,8 @@ import { useForm } from "react-hook-form";
 import { useDispatch } from "react-redux";
 import { Link, useNavigate } from "react-router-dom";
 import authService from "../appwrite/auth";
-import { login as authLogin } from "../store/authSlice";
-import { Logo,Button,Input } from "./index";
+import { login } from "../store/authSlice";
+import { Logo, Button, Input } from "./index";
 
 const Login = () => {
   const navigate = useNavigate();
@@ -12,13 +12,15 @@ const Login = () => {
   const { register, handleSubmit } = useForm();
   const [error, setError] = useState("");
 
-  const login = async (data) => {
+  const loginHandler = async (data) => {
     setError("");
     try {
       const session = await authService.login(data);
       if (session) {
-        const userData = await authService.getCurrentUser();
-        if (userData) dispatch(authLogin(userData));
+        await authService.getCurrentUser().then((data) => {
+          dispatch(login(data));
+        });
+        // if (session && userData) dispatch(login(userData));
         navigate("/");
       }
     } catch (error) {
@@ -32,7 +34,7 @@ const Login = () => {
       >
         <div className="mb-2 flex justify-center">
           <span className="inline-block w-full max-w-[150px]">
-            <Logo/>
+            <Logo />
           </span>
         </div>
         <h2 className="text-center text-2xl font-bold leading-tight">
@@ -48,7 +50,7 @@ const Login = () => {
           </Link>
         </p>
         {error && <p className="text-red-600 mt-8 text-center">{error}</p>}
-        <form onSubmit={handleSubmit(login)} className="mt-8">
+        <form onSubmit={handleSubmit(loginHandler)} className="mt-8">
           <div className="space-y-5">
             <Input
               // label="Email: "
